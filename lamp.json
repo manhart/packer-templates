@@ -1,0 +1,121 @@
+{
+  "_comment": "Build with `packer build -var 'version=1.0.3' -var-file='debian-11.6-amd64.json' .\\lamp.json`",
+  "variables": {
+    "vm_name": "lamp",
+    "cpus": "4",
+    "disk_size": "100000",
+    "memory": "4096",
+    "headless": "",
+    "iso_name": "debian-11.6.0-amd64-netinst.iso",
+    "mirror": "https://cdimage.debian.org/cdimage/release",
+    "mirror_directory": "11.6.0/amd64/iso-cd",
+    "preseed": "preseed-buster.cfg",
+	"guest_os_type": "Debian_64",
+    "ssh_password": "vagrant",
+    "ssh_username": "vagrant",
+	"ssh_timeout": "1h",
+	"git_revision": "__unknown_git_revision__",
+	"http_proxy": "{{env `http_proxy`}}",
+	"https_proxy": "{{env `https_proxy`}}",
+	"no_proxy": "{{env `no_proxy`}}",
+	"version": "1.0.3",
+	"box_tag": "manhart/lamp",
+	"vagrant_cloud_token": "",
+	"compression_level": "6",
+	"vagrantfile_template": "vagrant/Vagrantfile.template"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "boot_command": [
+        "<esc><wait>",
+		"install ",
+		"auto ",
+		"preseed/url=http://{{.HTTPIP}}:{{.HTTPPort}}/{{user `preseed`}} ",
+		"language=en country=DE locale=en_US.UTF-8 ",
+		"fb=false debconf/frontend=noninteractive ",
+		"keymap=de ",
+		"netcfg/get_hostname={{ .Name }} ",
+		"netcfg/get_domain=local ",
+		"<enter>"
+      ],
+      "boot_wait": "10s",
+      "communicator": "ssh",
+      "cpus": "{{user `cpus`}}",
+      "disk_size": "{{user `disk_size`}}",
+      "memory": "{{user `memory`}}",
+      "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+	  "virtualbox_version_file": ".vbox_version",
+      "guest_os_type": "{{user `guest_os_type`}}",
+      "hard_drive_interface": "sata",
+	  "iso_interface": "sata",
+	  "iso_checksum": "file:{{ user `mirror` }}/{{ user `mirror_directory` }}/SHA256SUMS",
+      "iso_url": "{{user `mirror`}}/{{user `mirror_directory`}}/{{user `iso_name`}}",
+	  "post_shutdown_delay": "1m",
+      "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S shutdown -Ph now",
+      "ssh_username": "{{ user `ssh_username` }}",
+      "ssh_password": "{{ user `ssh_password` }}",
+      "ssh_timeout": "{{ user `ssh_timeout` }}",
+	  "ssh_port": "22",
+	  "http_directory": "http",
+      "vm_name": "{{ user `vm_name` }}"
+    }
+  ],
+  "provisioners": [{
+        "type": "file",
+        "source": "files/debian",
+        "destination": "/tmp/files"
+    }, {
+      "environment_vars": [
+	    "SSH_USERNAME={{user `ssh_username`}}",
+        "SSH_PASSWORD={{user `ssh_password`}}",
+        "VM_NAME={{user `vm_name`}}",
+	    "INSTALL_VAGRANT_KEY=true",
+        "http_proxy={{user `http_proxy`}}",
+        "https_proxy={{user `https_proxy`}}",
+        "no_proxy={{user `no_proxy`}}",
+		"DEBIAN_FRONTEND=noninteractive"
+      ],
+      "type": "shell",
+      "execute_command": "echo '{{user `ssh_password`}}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "scripts/vagrant.sh",
+	    "scripts/base.sh",
+	    "scripts/update.sh",
+	    "scripts/virtualbox.sh",
+	    "scripts/motd.sh",
+		"scripts/tuning.sh",
+	    "scripts/lamp.sh",
+		"scripts/php-mssql.sh",
+		"scripts/php-xdebug.sh",
+		"scripts/phpmyadmin.sh",
+		"scripts/mail.sh",
+	  ]
+	}, {
+	  "environment_vars": [
+	    "DEBIAN_FRONTEND=noninteractive"
+	  ],
+      "type": "shell",
+	  "execute_command": "echo '{{user `ssh_password`}}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+	  "scripts": [
+	    "scripts/cleanup.sh"
+	  ]
+    }
+  ],
+  "post-processors": [
+    [
+      {
+		"type": "vagrant",
+		"compression_level": "{{ user `compression_level` }}",
+		"output": "box/{{user `vm_name`}}-{{user `version`}}-{{.Provider}}.box",
+		"vagrantfile_template": "{{ user `vagrantfile_template` }}"
+      },
+	  {
+        "type": "vagrant-cloud",
+		"access_token": "{{ user `vagrant_cloud_token` }}",
+		"box_tag": "{{ user `box_tag` }}",
+		"version": "{{user `version`}}"
+	  }
+    ]
+  ]
+}

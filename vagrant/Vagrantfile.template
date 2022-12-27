@@ -1,0 +1,92 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# require 'yaml'
+# require 'fileutils'
+
+# define VM_HOSTNAME = 'dev.local' in your Vagrantfile
+# define VM_IP = '192.168.56.11' in your Vagrantfile 
+
+
+unless defined? VM_HOSTNAME
+	VM_HOSTNAME = 'dev.local'
+end
+
+unless defined? VM_IP
+	VM_IP = '192.168.56.11'
+end
+
+unless defined? VM_SSH_PORT
+	VM_SSH_PORT = '22022'
+end
+
+project_directory = '/srv/www'
+
+# Vagrant.require_version '>= 2.2.4'
+
+VAGRANTFILE_API_VERSION = '2'
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+    config.vm.box_check_update = true
+    config.vm.hostname = VM_HOSTNAME
+
+    # config.vagrant.plugins = "vagrant-winnfsd"
+    # config.vm.define "lamp", primary: true do |lamp|
+	#   lamp.vm.hostname = VM_HOSTNAME
+	# end
+	
+	# shared folders
+    config.vm.synced_folder "./src", project_directory, create: true, group: "www-data", mount_options: ['dmode=775,fmode=664'], SharedFoldersEnableSymlinksCreate: true
+	# config.vm.synced_folder "./src", "srv/www", type: "rsync"
+	
+    # if ENV["windir"]
+    #   config.vm.synced_folder File.expand_path("system32/drivers/", ENV["windir"]), "/winhost"
+    # end
+	
+	### Networking (Port forwarding):
+	# Host-Only 2. Adapter
+    config.vm.network 'private_network', ip: VM_IP
+    # config.vm.network "public_network", auto_config: false
+	# config.vm.network "public_network", ip: "192.168.178.79", bridge: "Intel(R) I211 Gigabit Network Connection"
+	
+	
+	
+	# Hyper-V can block the default vagrant ssh port 2222, we switch to 22022
+	# check with PS: netsh interface ipv4 show excludedportrange protocol=tcp
+	config.vm.usable_port_range = (22022..22135)
+	config.vm.network :forwarded_port, guest: 22, host: 2222, disabled: true
+	config.vm.network :forwarded_port, guest: 22, host: VM_SSH_PORT, id: 'ssh', auto_correct: true
+	
+    # Apache
+    # config.vm.network "forwarded_port", guest: 80, host: 8080
+    
+	# MySQL/MariaDB
+    # config.vm.network "forwarded_port", guest: 3306, host: 33060
+	
+	# Redis
+    # config.vm.network "forwarded_port", guest: 6379, host: 63790
+	
+		### VirtualBox Provider
+	config.vm.provider 'virtualbox' do |vb|
+	    # display the VirtualBox GUI when booting the machine:
+		vb.gui = false
+		
+		# the machine name in VirtualBox:
+		vb.name = VM_HOSTNAME
+		
+		# for some reason, without this line, you will get errors with custom boxes:
+		# error: RawFile#0 failed to create the raw output file...
+		# vb.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
+    end
+	
+	
+	config.vm.define "virtualbox" do |virtualbox|
+		config.vm.provision "shell", inline: "echo Hello Developers! Your hostname is #{VM_HOSTNAME}"
+		
+        # config.vm.provision "shell", inline: <<-SHELL
+        # if ! grep -q "#{VM_IP} #{VM_HOSTNAME}" /winhost/etc/hosts; then
+        #   echo "#{VM_IP} #{VM_HOSTNAME}" >> /winhost/etc/hosts
+        # fi
+        # SHELL
+	end
+end

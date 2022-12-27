@@ -6,3 +6,6 @@ crash.log
 
 # For built boxes
 *.box
+
+private-vars.json
+ubuntu-20.04-amd64.json
