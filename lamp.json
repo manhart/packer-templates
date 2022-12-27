@@ -1,5 +1,5 @@
 {
-  "_comment": "Build with `packer build -var 'version=1.0.3' -var-file='debian-11.6-amd64.json' .\\lamp.json`",
+  "_comment": "Build with `packer build -var 'version=1.0.4' -var-file='debian-11.6-amd64.json' .\\lamp.json`",
   "variables": {
     "vm_name": "lamp",
     "cpus": "4",
@@ -18,7 +18,7 @@
 	"http_proxy": "{{env `http_proxy`}}",
 	"https_proxy": "{{env `https_proxy`}}",
 	"no_proxy": "{{env `no_proxy`}}",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"box_tag": "manhart/lamp",
 	"vagrant_cloud_token": "",
 	"compression_level": "6",
@@ -89,7 +89,7 @@
 		"scripts/php-mssql.sh",
 		"scripts/php-xdebug.sh",
 		"scripts/phpmyadmin.sh",
-		"scripts/mail.sh",
+		"scripts/mail.sh"
 	  ]
 	}, {
 	  "environment_vars": [
