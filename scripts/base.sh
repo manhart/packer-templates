@@ -2,7 +2,7 @@
 #title			: base.sh
 #description	: This script will make the basic configuration / settings
 #author			: Alexander Manhart <alexander@manhart-it.de>
-#date			: 2021-05-15
+#date			: 2020-05-27
 #notes			: 
 echo "==============================================="
 echo "===>          Basic configuration          <==="
@@ -33,7 +33,7 @@ mv /tmp/files/root/.bash_profile /root/.bash_profile
 chown root:root /root/.bash_profile
 
 # vim
-mv /tmp/files/vim/vimrc.local /etc/vim/vimrc.local
-chown root:root /etc/vim/vimrc.local
+# mv /tmp/files/vim/vimrc.local /etc/vim/vimrc.local
+# chown root:root /etc/vim/vimrc.local
 
 exit 0

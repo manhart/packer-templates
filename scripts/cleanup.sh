@@ -2,7 +2,7 @@
 #title			: cleanup.sh
 #description	: This script will cleanup the system 
 #author			: Alexander Manhart <alexander@manhart-it.de>
-#date			: 2021-05-15
+#date			: 2020-05-27
 #notes			:
 echo ''
 echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'

@@ -2,7 +2,7 @@
 #title			: update.sh
 #description	: This script updates packages
 #author			: Alexander Manhart <alexander@manhart-it.de>
-#date			: 2021-04-03
+#date			: 2020-05-27
 #notes			:
 echo "==============================================="
 echo "===>   Updating list of repositories and   <==="

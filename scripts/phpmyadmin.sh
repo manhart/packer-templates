@@ -1,8 +1,8 @@
 #!/bin/bash -eux
 #title			: phpmyadmin.sh
-#description	: This script will install the LAMP stack
+#description	: This script installs phpmyadmin
 #author			: Alexander Manhart <alexander@manhart-it.de>
-#date			: 2021-04-03
+#date			: 2020-05-27
 #notes			:
 echo ''
 echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
@@ -25,7 +25,9 @@ chown www-data:www-data /var/lib/phpmyadmin/tmp
 chmod 770 /var/lib/phpmyadmin/tmp
 
 # config.inc.php
-mv /tmp/files/phpmyadmin/config.inc.php /usr/share/phpmyadmin/config.inc.php
+
+randomBlowfishSecret=$(openssl rand -base64 32)
+sed -e "s|cfg\['blowfish_secret'\] = ''|cfg['blowfish_secret'] = '$randomBlowfishSecret'|" /tmp/files/phpmyadmin/config.inc.php > /usr/share/phpmyadmin/config.inc.php
 
 # configure the vhost
 mv /tmp/files/phpmyadmin/apache.conf /etc/apache2/sites-available/phpmyadmin.conf

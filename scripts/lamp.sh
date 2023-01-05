@@ -2,11 +2,14 @@
 #title			: lamp.sh
 #description	: This script will install the LAMP stack
 #author			: Alexander Manhart <alexander@manhart-it.de>
-#date			: 2021-05-15
-#notes			: MariaDB 10.5.latest, PHP 7.3/7.4/8.0, Apache 2.4, Composer, Postfix, Mailocal
-echo '==============================================='
-echo '===>    Start installing the LAMP Stack    <==='
-echo '==============================================='
+#date			: 2020-05-27
+#notes			: MariaDB 10.5.latest, PHP 7.4/8.0/8.1/8.2, Apache 2.4, Composer, Postfix, MailFetcher
+
+echo ''
+echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+echo '===>            Start installing the LAMP Stack            <==='
+echo '==============================================================='
+echo ''
 
 # database configuration
 DB_HOST='localhost'
@@ -110,20 +113,20 @@ a2enmod headers
 a2enmod http2
 a2ensite default-lamp.conf
 
-echo '===> Configure Apache default ssl vhost <==='
+echo '===> Configure Apache default ssl vhost: '$VM_NAME' <==='
 # SSL/TLS self-signed certificate
-if [[ ! -d /vagrant/ssl ]]
+if [[ ! -d $SSH_USER_HOME/ssl ]]
 then
-	mkdir -p /vagrant/ssl
-	chown $SSH_USER /vagrant/ssl
+	mkdir -p $SSH_USER_HOME/ssl
+	chown $SSH_USER $SSH_USER_HOME/ssl
 fi
-if [[ ! -f /vagrant/ssl/$VM_NAME.local.key ]]
+if [[ ! -f $SSH_USER_HOME/ssl/$VM_NAME.local.key ]]
 then
-	openssl genrsa -out /vagrant/ssl/$VM_NAME.local.key 4096
-	chgrp ssl-cert /vagrant/ssl/$VM_NAME.local.key
-	chown $SSH_USER /vagrant/ssl/$VM_NAME.local.key
-	openssl req -new -x509 -key /vagrant/ssl/$VM_NAME.local.key -out /vagrant/ssl/$VM_NAME.local.crt -days 3650 -subj /CN=$VM_NAME.local
-	chown $SSH_USER /vagrant/ssl/$VM_NAME.local.crt
+	openssl genrsa -out $SSH_USER_HOME/ssl/$VM_NAME.local.key 4096
+	chgrp ssl-cert $SSH_USER_HOME/ssl/$VM_NAME.local.key
+	chown $SSH_USER $SSH_USER_HOME/ssl/$VM_NAME.local.key
+	openssl req -new -x509 -key $SSH_USER_HOME/ssl/$VM_NAME.local.key -out $SSH_USER_HOME/ssl/$VM_NAME.local.crt -days 3650 -subj /CN=$VM_NAME.local
+	chown $SSH_USER $SSH_USER_HOME/ssl/$VM_NAME.local.crt
 fi
 
 echo '<IfModule mod_ssl.c>
@@ -135,7 +138,7 @@ echo '<IfModule mod_ssl.c>
 		# activate HTTP/2 protocol
 		Protocols h2 h2c http/1.1
 		SSLEngine on
-		SSLCertificateFile '$SSH_USER_HOME'/ssl/'$VM_NAME'.local.cert
+		SSLCertificateFile '$SSH_USER_HOME'/ssl/'$VM_NAME'.local.crt
 		SSLCertificateKeyFile '$SSH_USER_HOME'/ssl/'$VM_NAME'.local.key
 		<Directory /srv/www>
 			Options Indexes FollowSymLinks
@@ -186,16 +189,16 @@ echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /et
 apt-get -y update
 
 echo '===> Install PHP 7.4 <==='
-apt-get install -yq php7.4-fpm php7.4-cli php7.4-common php7.4-mysql php7.4-curl php7.4-json php7.4-opcache php7.4-odbc php7.4-xml php7.4-ldap php7.4-mbstring php7.4-dev php7.4-gd php7.4-zip php7.4-sqlite3 php7.4-intl php7.4-bcmath php7.4-geoip php7.4-memcached php7.4-yaml  php7.4-imap php7.4-mailparse php7.4-soap --allow-unauthenticated
+apt-get install -yq php7.4-fpm php7.4-cli php7.4-common php7.4-json php7.4-opcache php7.4-odbc php7.4-ldap php7.4-dev php7.4-gd php7.4-sqlite3 php7.4-bcmath php7.4-geoip php7.4-imap php7.4-mailparse php7.4-soap --allow-unauthenticated
 
 echo '===> Install PHP 8.0 <==='
-apt-get install -yq php8.0-fpm php8.0-cli php8.0-common php8.0-mysql php8.0-curl php8.0-opcache php8.0-odbc php8.0-xml php8.0-ldap php8.0-mbstring php8.0-dev php8.0-gd php8.0-zip php8.0-sqlite3 php8.0-intl php8.0-bcmath php8.0-memcached php8.0-yaml php8.0-imap php8.0-mailparse php8.0-soap --allow-unauthenticated
+apt-get install -yq php8.0-fpm php8.0-cli php8.0-common php8.0-opcache php8.0-odbc php8.0-ldap php8.0-dev php8.0-gd php8.0-sqlite3 php8.0-bcmath php8.0-imap php8.0-mailparse php8.0-soap --allow-unauthenticated
 
 echo '===> Install PHP 8.1 <==='
-apt-get install -yq php8.1-fpm php8.1-cli php8.1-common php8.1-mysql php8.1-curl php8.1-opcache php8.1-odbc php8.1-xml php8.1-ldap php8.1-mbstring php8.1-dev php8.1-gd php8.1-zip php8.1-sqlite3 php8.1-intl php8.1-bcmath php8.1-memcached php8.1-yaml php8.1-imap php8.1-mailparse php8.1-soap --allow-unauthenticated
+apt-get install -yq php8.1-fpm php8.1-cli php8.1-common php8.1-opcache php8.1-odbc php8.1-ldap php8.1-dev php8.1-gd php8.1-sqlite3 php8.1-bcmath php8.1-imap php8.1-mailparse php8.1-soap --allow-unauthenticated
 
 echo '===> Install PHP 8.2 <==='
-apt-get install -yq php8.2-fpm php8.2-cli php8.2-common php8.2-mysql php8.2-curl php8.2-opcache php8.2-odbc php8.2-xml php8.2-ldap php8.2-mbstring php8.2-dev php8.2-gd php8.2-zip php8.2-sqlite3 php8.2-intl php8.2-bcmath php8.2-memcached php8.2-yaml php8.2-imap php8.2-mailparse php8.2-soap --allow-unauthenticated
+apt-get install -yq php8.2-fpm php8.2-cli php8.2-common php8.2-opcache php8.2-odbc php8.2-ldap php8.2-dev php8.2-gd php8.2-sqlite3 php8.2-bcmath php8.2-imap php8.2-mailparse php8.2-soap --allow-unauthenticated
 
 # php8.0-geoip not availaible
 
@@ -207,10 +210,7 @@ apt-get install -yq php8.2-fpm php8.2-cli php8.2-common php8.2-mysql php8.2-curl
 
 # apt-get install -yq php-memcached 02.03.2021, AM, doesn't work anymore
 
-apt-get install -yq php-yaml
-
-apt-get install -yq php-redis
-
+apt-get install -yq php-mysql php-curl php-mbstring php-intl php-xml php-yaml php-memcached php-redis php-zip php-imagick
 apt-get install -yq php-maxminddb
 
 # Log directories

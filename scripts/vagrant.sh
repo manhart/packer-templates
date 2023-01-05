@@ -2,7 +2,7 @@
 #title			: vagrant.sh
 #description	: This script configures the vagrant user
 #author			: Alexander Manhart <alexander@manhart-it.de>
-#date			: 2021-04-03
+#date			: 2020-05-27
 #notes			:
 echo '==============================================='
 echo '===>   Configuring settings for vagrant    <==='

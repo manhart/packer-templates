@@ -3,7 +3,7 @@
 #description	: This script will install the LAMP stack
 #author			: Alexander Manhart <alexander@manhart-it.de>
 #date			: 2021-04-03
-#notes			:
+#notes			: 
 
 echo ''
 echo '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
