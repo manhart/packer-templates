@@ -7,5 +7,5 @@ The completed Virtualbox can be used via the [Vagrant Cloud](https://app.vagrant
 If you want to create the LAMP box yourself, you can do so with the following command in the "lamp" directory:
 
 ```PowerShell
-packer build -var 'version=1.0.5' -var-file='debian-11.6-amd64.json' -var-file='private-vars.json' .\\lamp.json
+packer build -var 'version=1.0.5' -var-file='debian-11.6-amd64.json' -var-file='private-vars.json' .\lamp.json
 ```
