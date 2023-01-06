@@ -7,5 +7,6 @@ crash.log
 # For built boxes
 *.box
 
+build-bullseye-vagrant-cloud.bat
 private-vars.json
 ubuntu-20.04-amd64.json
