@@ -9,7 +9,7 @@ packer build -except="vaground-cloud" -var "version=1.0.0" -var-file="debian-11.
 ```
 
 
-The completed virtual machine (Virtualbox) is available on [Vagrant Cloud](https://app.vagrantup.com/manhart/boxes/lamp). To start the virtual machine you need [VirtualBox](https://www.virtualbox.org/wiki/Downloads) at least v6.1.40 and [Vagrant](https://developer.hashicorp.com/vagrant/downloads) at least v2
+The pre-built virtual machine (Virtualbox) is available on [Vagrant Cloud](https://app.vagrantup.com/manhart/boxes/lamp). To start the virtual machine you need [VirtualBox](https://www.virtualbox.org/wiki/Downloads) at least v6.1.40 and [Vagrant](https://developer.hashicorp.com/vagrant/downloads) at least v2
 
 Use the pre-built virtual machine by changing to a directory such as dev.local and initialize the box with Vagrant:
 
