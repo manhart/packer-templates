@@ -20,4 +20,4 @@ vagrant init -m manhart/lamp
 vagrant up
 ```
 
-The box uses symbolic links. Under Windows [this](https://www.speich.net/articles/en/2018/12/24/virtualbox-6-how-to-enable-symlinks-in-a-linux-guest-os/) has to be activated separately.
+The box uses symbolic links. Under Windows [this](https://superuser.com/questions/124679/how-do-i-create-a-link-in-windows-7-home-premium-as-a-regular-user#125981) has to be activated separately.
