@@ -19,3 +19,5 @@ cd dev.local
 vagrant init -m manhart/lamp
 vagrant up
 ```
+
+The box uses symbolic links. Under Windows [this](https://www.speich.net/articles/en/2018/12/24/virtualbox-6-how-to-enable-symlinks-in-a-linux-guest-os/) has to be activated separately.
