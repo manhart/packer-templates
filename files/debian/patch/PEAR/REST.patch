@@ -1,0 +1,10 @@
+--- /usr/share/php/PEAR/REST.php        2019-11-19 06:59:17.000000000 +0100
++++ /tmp/REST.php       2020-05-23 16:56:09.764769279 +0200
+@@ -184,6 +184,7 @@
+
+         $cachettl = $this->config->get('cache_ttl');
+         // If cache is newer than $cachettl seconds, we use the cache!
++       if(!isset($cacheid['age'])) $cacheid['age'] = 0;
+         if (time() - $cacheid['age'] < $cachettl) {
+             return $this->getCache($url);
+         }
