@@ -305,20 +305,20 @@ sed -i 's#^;error_log = php_errors.log$#error_log = /var/log/php/8\.1/php_errors
 sed -i 's#^;error_log = php_errors.log$#error_log = /var/log/php/8\.0/php_errors\.log#' /etc/php/8.0/cli/php.ini
 sed -i 's#^;error_log = php_errors.log$#error_log = /var/log/php/7\.4/php_errors\.log#' /etc/php/7.4/cli/php.ini
 
-sed -i 's#^;date.timezone = .*$#date.timezone = "Europe/Berlin"#' /etc/php/8.2/fpm/php.ini
-sed -i 's#^;date.timezone = .*$#date.timezone = "Europe/Berlin"#' /etc/php/8.1/fpm/php.ini
-sed -i 's#^;date.timezone = .*$#date.timezone = "Europe/Berlin"#' /etc/php/8.0/fpm/php.ini
-sed -i 's#^;date.timezone = .*$#date.timezone = "Europe/Berlin"#' /etc/php/7.4/fpm/php.ini
+sed -i 's#^;date.timezone =.*$#date.timezone = "Europe/Berlin"#' /etc/php/8.2/fpm/php.ini
+sed -i 's#^;date.timezone =.*$#date.timezone = "Europe/Berlin"#' /etc/php/8.1/fpm/php.ini
+sed -i 's#^;date.timezone =.*$#date.timezone = "Europe/Berlin"#' /etc/php/8.0/fpm/php.ini
+sed -i 's#^;date.timezone =.*$#date.timezone = "Europe/Berlin"#' /etc/php/7.4/fpm/php.ini
 
-sed -i 's#^;date.default_latitude = .*$#date.default_latitude = "52.5194"#' /etc/php/8.2/fpm/php.ini
-sed -i 's#^;date.default_latitude = .*$#date.default_latitude = "52.5194"#' /etc/php/8.1/fpm/php.ini
-sed -i 's#^;date.default_latitude = .*$#date.default_latitude = "52.5194"#' /etc/php/8.0/fpm/php.ini
-sed -i 's#^;date.default_latitude = .*$#date.default_latitude = "52.5194"#' /etc/php/7.4/fpm/php.ini
+sed -i 's#^;date.default_latitude =.*$#date.default_latitude = "52.5194"#' /etc/php/8.2/fpm/php.ini
+sed -i 's#^;date.default_latitude =.*$#date.default_latitude = "52.5194"#' /etc/php/8.1/fpm/php.ini
+sed -i 's#^;date.default_latitude =.*$#date.default_latitude = "52.5194"#' /etc/php/8.0/fpm/php.ini
+sed -i 's#^;date.default_latitude =.*$#date.default_latitude = "52.5194"#' /etc/php/7.4/fpm/php.ini
 
-sed -i 's#^;date.default_longitude = .*$#date.default_longitude = "13.4067"#' /etc/php/8.2/fpm/php.ini
-sed -i 's#^;date.default_longitude = .*$#date.default_longitude = "13.4067"#' /etc/php/8.1/fpm/php.ini
-sed -i 's#^;date.default_longitude = .*$#date.default_longitude = "13.4067"#' /etc/php/8.0/fpm/php.ini
-sed -i 's#^;date.default_longitude = .*$#date.default_longitude = "13.4067"#' /etc/php/7.4/fpm/php.ini
+sed -i 's#^;date.default_longitude =.*$#date.default_longitude = "13.4067"#' /etc/php/8.2/fpm/php.ini
+sed -i 's#^;date.default_longitude =.*$#date.default_longitude = "13.4067"#' /etc/php/8.1/fpm/php.ini
+sed -i 's#^;date.default_longitude =.*$#date.default_longitude = "13.4067"#' /etc/php/8.0/fpm/php.ini
+sed -i 's#^;date.default_longitude =.*$#date.default_longitude = "13.4067"#' /etc/php/7.4/fpm/php.ini
 
 sed -i 's#^;max_input_vars = .*$#max_input_vars = 2000#' /etc/php/8.2/fpm/php.ini
 sed -i 's#^;max_input_vars = .*$#max_input_vars = 2000#' /etc/php/8.1/fpm/php.ini
