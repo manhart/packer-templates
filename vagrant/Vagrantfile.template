@@ -4,12 +4,13 @@
 # require 'yaml'
 # require 'fileutils'
 
-# define VM_HOSTNAME = 'dev.local' in your Vagrantfile
+# Customer User Variables:
+# define VM_NAME = 'dev.local' in your Vagrantfile
 # define VM_IP = '192.168.56.11' in your Vagrantfile 
 
 
-unless defined? VM_HOSTNAME
-	VM_HOSTNAME = 'dev.local'
+unless defined? VM_NAME
+	VM_NAME = 'dev.local'
 end
 
 unless defined? VM_IP
@@ -22,25 +23,30 @@ end
 
 project_directory = '/srv/www'
 
+HOSTNAME = VM_NAME.split('.')[0];
+
 # Vagrant.require_version '>= 2.2.4'
 
 VAGRANTFILE_API_VERSION = '2'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.box_check_update = true
-    config.vm.hostname = VM_HOSTNAME
+    config.vm.hostname = VM_NAME
 
     # config.vagrant.plugins = "vagrant-winnfsd"
     # config.vm.define "lamp", primary: true do |lamp|
-	#   lamp.vm.hostname = VM_HOSTNAME
+	#   lamp.vm.hostname = VM_NAME
 	# end
 	
-	# shared folders
+	# shared folders 
+	# @see @see https://www.speich.net/articles/en/2018/12/24/virtualbox-6-how-to-enable-symlinks-in-a-linux-guest-os/
+	# @see https://superuser.com/questions/124679/how-do-i-create-a-link-in-windows-7-home-premium-as-a-regular-user#125981
     config.vm.synced_folder "./src", project_directory, create: true, group: "www-data", mount_options: ['dmode=775,fmode=664'], SharedFoldersEnableSymlinksCreate: true
-	# config.vm.synced_folder "./src", "srv/www", type: "rsync"
+	# alternate: config.vm.synced_folder "./src", "srv/www", type: "rsync"
 	
+	# @todo write VM_NAME to hosts file
     # if ENV["windir"]
-    #   config.vm.synced_folder File.expand_path("system32/drivers/", ENV["windir"]), "/winhost"
+    #   File.expand_path("system32/drivers/", ENV["windir"]), "/winhost"
     # end
 	
 	### Networking (Port forwarding):
@@ -48,7 +54,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.network 'private_network', ip: VM_IP
     # config.vm.network "public_network", auto_config: false
 	# config.vm.network "public_network", ip: "192.168.178.79", bridge: "Intel(R) I211 Gigabit Network Connection"
-	
 	
 	
 	# Hyper-V can block the default vagrant ssh port 2222, we switch to 22022
@@ -59,10 +64,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	
     # Apache
     # config.vm.network "forwarded_port", guest: 80, host: 8080
-    
 	# MySQL/MariaDB
     # config.vm.network "forwarded_port", guest: 3306, host: 33060
-	
 	# Redis
     # config.vm.network "forwarded_port", guest: 6379, host: 63790
 	
@@ -72,21 +75,129 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		vb.gui = false
 		
 		# the machine name in VirtualBox:
-		vb.name = VM_HOSTNAME
+		vb.name = VM_NAME
 		
 		# for some reason, without this line, you will get errors with custom boxes:
 		# error: RawFile#0 failed to create the raw output file...
 		# vb.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
     end
 	
+	    # check gitconfig and write defaults
+    if ARGV.include?("up") || (ARGV.include?("reload") && ARGV.include?("--provision"))
+        gitConfigFile = File.expand_path("~/.gitconfig")
+        print "Checking #{gitConfigFile} ...\n"
+        unless File.exists? (gitConfigFile)
+            print "Your #{gitConfigFile} is missing.\n\nPlease insert your credentials\n"
+            print "Firstname and Lastname: "
+            name = STDIN.gets.chomp
+            print "E-Mail: "
+            email = STDIN.gets.chomp
+            File.write(gitConfigFile, "[user]
+name = #{name}
+email = #{email}
+
+ [core]
+     autocrlf = false
+ ")
+            print "#{gitConfigFile} created\n"
+            print "\n"
+        end
+    end
+
+    # copy .gitconfig to vm
+    config.vm.provision "file", source: "~/.gitconfig", destination: ".gitconfig"
+
+    # copy private key file to vm
+    if File.exists?("#{Dir.home}/.ssh/id_rsa")
+        config.vm.provision "file", source: "~/.ssh/id_rsa", destination: ".ssh/id_rsa"
+        config.vm.provision 'shell', inline: "chmod 600 ~/.ssh/id_rsa", privileged: false
+    end
+
+    # copy public key file to vm and register for vagrant user
+    if File.exists?("#{Dir.home}/.ssh/id_rsa.pub")
+        ssh_pub_key = File.readlines("#{Dir.home}/.ssh/id_rsa.pub").first.strip
+        config.vm.provision 'shell', inline: "grep -q -F \"#{ssh_pub_key}\" ~/.ssh/authorized_keys 2>/dev/null || echo \"#{ssh_pub_key}\" >> ~/.ssh/authorized_keys", privileged: false
+    end
+
+    config.vm.provision "shell", args: [VM_NAME, VM_IP, HOSTNAME],  inline: <<-SHELL
+        ssh-add -l
+
+        echo "Provisioning via shell $1. Modify /etc/hosts to this host $3"
+        sed -i 's#lamp#'$3'#g' /etc/hosts
+
+        # MariaDB shell login with root and no password (@todo: maybe revise with random password)
+        mysqladmin --user=root password ""
+        systemctl restart mariadb.service
+
+        echo "Update apt packages"
+        apt-get update -yqq
+        apt-get upgrade -yqqf
+
+        echo "Update composer"
+        COMPOSER_ALLOW_SUPERUSER=1 composer self-update
+
+        VAGRANT_HOME_SSL=/home/vagrant/ssl
+        VAGRANT_SHARE_SSL=/vagrant/ssl
+
+        # Generating SSL/TLS self-signed certificate
+        if [[ -f /etc/apache2/sites-available/default-ssl-lamp.conf ]]
+        then
+            # check SSL/TLS self-signed certificate
+            if [[ ! -d $VAGRANT_HOME_SSL ]]
+            then
+                mkdir -p $VAGRANT_HOME_SSL
+                chown vagrant $VAGRANT_HOME_SSL
+            fi
+
+            echo 'authorityKeyIdentifier=keyid,issuer
+        basicConstraints=CA:FALSE
+        keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+        subjectAltName = @alt_names
+
+        [alt_names]
+        DNS.1 = '$1'
+        IP.1 = '$2'
+        IP.2 = 127.0.0.1' > $VAGRANT_HOME_SSL/$3.ext
+
+            if [[ ! -f $VAGRANT_HOME_SSL/$1.key ]]
+            then
+                # https://serverfault.com/questions/845766/generating-a-self-signed-cert-with-openssl-that-works-in-chrome-58
+                echo "Generating SSL/TLS Certificate"
+                openssl genrsa -out $VAGRANT_HOME_SSL/rootCA.key 4096 &>/dev/null
+                openssl req -x509 -new -nodes -key $VAGRANT_HOME_SSL/rootCA.key -sha256 -days 18250 -out $VAGRANT_HOME_SSL/rootCA.pem -subj "/C=DE/ST=Bayern/L=Landshut/O=Local AG/OU=IT Department/CN=$1" &>/dev/null
+                openssl req -new -newkey rsa:4096 -sha256 -nodes -keyout $VAGRANT_HOME_SSL/$1.key -out $VAGRANT_HOME_SSL/$1.csr -subj "/C=DE/ST=Bayern/L=Landshut/O=Local AG/OU=IT Department/CN=$1" &>/dev/null
+                openssl x509 -req -in $VAGRANT_HOME_SSL/$1.csr -CA $VAGRANT_HOME_SSL/rootCA.pem -CAkey $VAGRANT_HOME_SSL/rootCA.key -CAcreateserial -out $VAGRANT_HOME_SSL/$1.crt -days 18250 -sha256 -extfile $VAGRANT_HOME_SSL/v3.ext
+                openssl pkcs12 -export -out $VAGRANT_HOME_SSL/$1.pfx -inkey $VAGRANT_HOME_SSL/$1.key -in $VAGRANT_HOME_SSL/$1.crt -passin pass:vagrant -passout pass:vagrant
+                chown vagrant $VAGRANT_HOME_SSL/*
+
+                sed -i 's#SSLCertificateFile .*#SSLCertificateFile '$VAGRANT_HOME_SSL'/'$1'.crt#' /etc/apache2/sites-available/default-ssl-lamp.conf
+                sed -i 's#SSLCertificateKeyFile .*#SSLCertificateKeyFile '$VAGRANT_HOME_SSL'/'$1'.key#' /etc/apache2/sites-available/default-ssl-lamp.conf
+                systemctl restart apache2.service
+
+                # Copy certificate to share
+                if [[ ! -d $VAGRANT_SHARE_SSL ]]
+                then
+                    mkdir -p $VAGRANT_SHARE_SSL
+                fi
+
+                cp -f $VAGRANT_HOME_SSL/* $VAGRANT_SHARE_SSL/
+
+                echo "Create readme.txt to import SSL-Certificate in Chrome"
+                echo '-= Import Key in Google Chrome =-
+
+        - Enter URL: chrome://settings/security
+        - Click on "Zertifikate verwalten" (HTTPS/SSL-Zertifikate und -Einstellungen verwalten)
+        - Click on button "Importieren..."
+        - Choose the file rootCA.pem from your box ./ssl directory
+        - Continue
+          Attention (VERY IMPORTANT): in the next window press "Durchsuchen" and choose "Vertrauenswürdige Stammzertifizierungsstellen"
+        - Continue, confirm and finish
+        - Restart browser' > $VAGRANT_SHARE_SSL/readme.txt
+            fi
+        fi
+    SHELL
 	
 	config.vm.define "virtualbox" do |virtualbox|
-		config.vm.provision "shell", inline: "echo Hello Developers! Your hostname is #{VM_HOSTNAME}"
-		
-        # config.vm.provision "shell", inline: <<-SHELL
-        # if ! grep -q "#{VM_IP} #{VM_HOSTNAME}" /winhost/etc/hosts; then
-        #   echo "#{VM_IP} #{VM_HOSTNAME}" >> /winhost/etc/hosts
-        # fi
-        # SHELL
+		config.vm.provision "shell", inline: "echo Hello Developers! Your hostname is #{VM_NAME}"
 	end
 end
