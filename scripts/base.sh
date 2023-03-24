@@ -12,9 +12,10 @@ echo "Hello, this is `whoami`"
 SSH_USER=${SSH_USERNAME:-vagrant}
 SSH_USER_HOME=${SSH_USER_HOME:-/home/${SSH_USER}}
 
-# ssh
+# secure ssh
 sed -i 's/^#Post 22$/Port 22/' /etc/ssh/sshd_config
-sed -i 's/^#PermitRootLogin .*$/#PermitRootLogin no/' /etc/ssh/sshd_config
+sed -i 's/^#PermitRootLogin .*$/PermitRootLogin no/' /etc/ssh/sshd_config
+sed -i 's/^#PasswordAuthentication .*$/PasswordAuthentication no/' /etc/ssh/sshd_config
 
 # skel
 mv /tmp/files/skel/.bashrc /etc/skel/.bashrc
