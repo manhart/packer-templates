@@ -3,7 +3,7 @@
   "variables": {
     "vm_name": "lamp",
     "cpus": "4",
-    "disk_size": "100000",
+    "disk_size": "200000",
     "memory": "4096",
     "headless": "",
     "iso_name": "debian-11.6.0-amd64-netinst.iso",
