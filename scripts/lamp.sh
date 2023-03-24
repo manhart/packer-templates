@@ -22,9 +22,9 @@ DB_USER_PASS=${SSH_PASSWORD:-vagrant}
 VM_NAME=${VM_NAME}
 
 # ensure database is installed
-echo '===> Install MariaDB 10.5 <==='
+echo '===> Install MariaDB 10.11 <==='
 apt-get install -y software-properties-common dirmngr apt-transport-https
-curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash -s -- --mariadb-server-version=10.5 --os-type=debian --os-version=bullseye
+curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash -s -- --mariadb-server-version=10.11 --os-type=debian --os-version=bullseye
 
 apt-get -yqq update
 apt-get -yq install mariadb-server
@@ -181,9 +181,7 @@ apt-get install -yq memcached
 
 apt-get install -yq redis-server
 
-wget https://packages.sury.org/php/apt.gpg
-apt-key add apt.gpg
-rm -f apt.gpg
+wget -qO /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 
 echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/php.list
 apt-get -y update
@@ -238,7 +236,7 @@ DIR_LOG_PHP=/var/log/php/7.4
 mkdir -p $DIR_LOG_PHP
 chgrp www-data $DIR_LOG_PHP
 chmod 775 $DIR_LOG_PHP
-
+echo 'Done'
 
 echo ''
 echo '==============================================================='
@@ -369,6 +367,7 @@ sed -i 's/^user = .*$/user = vagrant/' /etc/php/8.2/fpm/pool.d/www.conf
 sed -i 's/^user = .*$/user = vagrant/' /etc/php/8.1/fpm/pool.d/www.conf
 sed -i 's/^user = .*$/user = vagrant/' /etc/php/8.0/fpm/pool.d/www.conf
 sed -i 's/^user = .*$/user = vagrant/' /etc/php/7.4/fpm/pool.d/www.conf
+echo 'Done'
 
 echo ''
 echo '==============================================================='
