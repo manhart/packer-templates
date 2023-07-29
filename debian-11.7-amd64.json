@@ -1,0 +1,8 @@
+{
+    "iso_name": "debian-11.7.0-amd64-netinst.iso",
+    "mirror": "https://cdimage.debian.org/cdimage/archive",
+    "mirror_directory": "11.7.0/amd64/iso-cd",
+    "preseed": "preseed-bullseye.cfg",
+	"guest_os_type": "Debian_64",
+    "headless": "false"
+}
