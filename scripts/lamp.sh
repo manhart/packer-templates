@@ -78,7 +78,7 @@ echo '===> Install apache worker event <==='
 apt-get -yq install apache2
 apt-get -yq install apachetop
 
-echo '===> Prepare Webserver Document_Root in /srv/www <==='
+echo '===> Prepare Webserver Document_Root in /virtualweb <==='
 mkdir -p /srv/www
 chgrp www-data /srv/www
 chmod 2775 /srv/www
@@ -90,7 +90,7 @@ a2dissite 000-default.conf
 # forces flush only for special filter/files: ProxyPassMatch "^/masterDeployer/deploy\.php(/.*)?$" "unix:/run/php/php7.4-fpm.sock|fcgi://localhost/srv/www/" enablereuse=on flushpackets=on
 echo '===> Configure Apache default vhost <==='
 echo '<VirtualHost *:80>
-	DocumentRoot /srv/www
+	DocumentRoot /virtualweb
 	AllowEncodedSlashes On
 	# we deactivate sendfile for faster static content delivery, because it (pagecache) can make problems with nfs, smb, ... shares
 	EnableSendfile Off
@@ -99,12 +99,15 @@ echo '<VirtualHost *:80>
 	Header always set Strict-Transport-Security "max-age=0;includeSubDomains"
 	# activate HTTP/2 protocol
 	Protocols h2 h2c http/1.1
-	<Directory /srv/www>
+	<Directory /virtualweb>
 		Options Indexes FollowSymLinks
 		DirectoryIndex index.php index.html
 		AllowOverride All
 		Require all granted
 	</Directory>
+	<filesMatch ".(js|css)$">
+		Header set Cache-Control "no-cache"
+	</filesMatch>
 	ErrorLog ${APACHE_LOG_DIR}/error.log
 	CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>' > /etc/apache2/sites-available/default-lamp.conf
@@ -131,7 +134,7 @@ fi
 
 echo '<IfModule mod_ssl.c>
 	<VirtualHost *:443>
-		DocumentRoot /srv/www
+		DocumentRoot /virtualweb
 		AllowEncodedSlashes On
 		# we deactivate sendfile for faster static content delivery, because it (pagecache) can make problems with nfs, smb, ... shares
 		EnableSendfile Off
@@ -140,7 +143,7 @@ echo '<IfModule mod_ssl.c>
 		SSLEngine on
 		SSLCertificateFile '$SSH_USER_HOME'/ssl/'$VM_NAME'.local.crt
 		SSLCertificateKeyFile '$SSH_USER_HOME'/ssl/'$VM_NAME'.local.key
-		<Directory /srv/www>
+		<Directory /virtualweb>
 			Options Indexes FollowSymLinks
 			DirectoryIndex index.php index.html
 			AllowOverride All
@@ -149,6 +152,9 @@ echo '<IfModule mod_ssl.c>
 		<FilesMatch "\.(cgi|shtml|phtml|php)$">
 			SSLOptions +StdEnvVars
 		</FilesMatch>
+		<filesMatch ".(js|css)$">
+			Header set Cache-Control "no-cache"
+		</filesMatch>
 		<Directory /usr/lib/cgi-bin>
 			SSLOptions +StdEnvVars
 		</Directory>
@@ -277,6 +283,11 @@ sed -i 's/^error_reporting = .*$/error_reporting = E_ALL/' /etc/php/8.2/fpm/php.
 sed -i 's/^error_reporting = .*$/error_reporting = E_ALL/' /etc/php/8.1/fpm/php.ini
 sed -i 's/^error_reporting = .*$/error_reporting = E_ALL/' /etc/php/8.0/fpm/php.ini
 sed -i 's/^error_reporting = .*$/error_reporting = E_ALL/' /etc/php/7.4/fpm/php.ini
+
+sed -i 's/^zend.assertions = .*$/zend.assertions = 1/' /etc/php/8.2/fpm/php.ini
+sed -i 's/^zend.assertions = .*$/zend.assertions = 1/' /etc/php/8.1/fpm/php.ini
+sed -i 's/^zend.assertions = .*$/zend.assertions = 1/' /etc/php/8.0/fpm/php.ini
+sed -i 's/^zend.assertions = .*$/zend.assertions = 1/' /etc/php/7.4/fpm/php.ini
 
 sed -i 's/^upload_max_filesize = .*$/upload_max_filesize = 32M/' /etc/php/8.2/fpm/php.ini
 sed -i 's/^upload_max_filesize = .*$/upload_max_filesize = 32M/' /etc/php/8.1/fpm/php.ini
@@ -424,14 +435,12 @@ echo '==============================================================='
 echo '===>                     Install Deployer                  <==='
 echo '==============================================================='
 echo ''
-curl -LO https://deployer.org/releases/v6.9.0/deployer.phar
+curl -LO https://github.com/deployphp/deployer/releases/download/v7.3.1/deployer.phar
 mv deployer.phar /usr/local/bin/dep
 chgrp vagrant /usr/local/bin/dep
 chmod 775 /usr/local/bin/dep
-dep autocomplete --install | sudo tee /etc/bash_completion.d/deployer 1>/dev/null
-# https://github.com/deployphp/recipes
-mkdir -p /usr/share/php/recipe
-wget -O /usr/share/php/recipe/ms-teams.php https://raw.githubusercontent.com/deployphp/recipes/master/recipe/ms-teams.php
+# Still not working: https://github.com/deployphp/deployer/issues/3366
+dep completion bash > /etc/bash_completion.d/deployer
 
 
 echo ''

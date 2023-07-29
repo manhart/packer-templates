@@ -27,7 +27,7 @@ chmod 770 /var/lib/phpmyadmin/tmp
 # config.inc.php
 
 randomBlowfishSecret=$(openssl rand -base64 32)
-sed -e "s|cfg\['blowfish_secret'\] = ''|cfg['blowfish_secret'] = '$randomBlowfishSecret'|" /tmp/files/phpmyadmin/config.inc.php > /usr/share/phpmyadmin/config.inc.php
+sed -e "s|cfg\['blowfish_secret'\] = ''|cfg['blowfish_secret'] = base64_decode('$randomBlowfishSecret')|" /tmp/files/phpmyadmin/config.inc.php > /usr/share/phpmyadmin/config.inc.php
 
 # configure the vhost
 mv /tmp/files/phpmyadmin/apache.conf /etc/apache2/sites-available/phpmyadmin.conf

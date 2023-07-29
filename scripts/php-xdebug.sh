@@ -32,7 +32,7 @@ echo 'xdebug.mode=debug,develop,coverage,trace,profile
 ; https://xdebug.org/docs/all_settings#start_with_request
 xdebug.start_with_request = trigger
 ; https://xdebug.org/docs/all_settings#start_upon_error
-xdebug.start_upon_error = yes
+xdebug.start_upon_error = no
 xdebug.client_host=10.0.2.2
 xdebug.client_port=9003
 xdebug.dump.SERVER=REMOTE_ADDR,REQUEST_METHOD
@@ -52,7 +52,7 @@ echo 'xdebug.mode=debug,develop,coverage,trace,profile
 ; https://xdebug.org/docs/all_settings#start_with_request
 xdebug.start_with_request = trigger
 ; https://xdebug.org/docs/all_settings#start_upon_error
-xdebug.start_upon_error = yes
+xdebug.start_upon_error = no
 xdebug.client_host=10.0.2.2
 xdebug.client_port=9003
 xdebug.dump.SERVER=REMOTE_ADDR,REQUEST_METHOD
@@ -73,7 +73,7 @@ echo 'xdebug.mode=debug,develop,coverage,trace,profile
 ; https://xdebug.org/docs/all_settings#start_with_request
 xdebug.start_with_request = trigger
 ; https://xdebug.org/docs/all_settings#start_upon_error
-xdebug.start_upon_error = yes
+xdebug.start_upon_error = no
 xdebug.client_host=10.0.2.2
 xdebug.client_port=9003
 xdebug.dump.SERVER=REMOTE_ADDR,REQUEST_METHOD
@@ -93,7 +93,7 @@ echo 'xdebug.mode=debug,develop,coverage,trace,profile
 ; https://xdebug.org/docs/all_settings#start_with_request
 xdebug.start_with_request = trigger
 ; https://xdebug.org/docs/all_settings#start_upon_error
-xdebug.start_upon_error = yes
+xdebug.start_upon_error = no
 xdebug.client_host=10.0.2.2
 xdebug.client_port=9003
 xdebug.dump.SERVER=REMOTE_ADDR,REQUEST_METHOD

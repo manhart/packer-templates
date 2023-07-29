@@ -37,4 +37,7 @@ chown root:root /root/.bash_profile
 # mv /tmp/files/vim/vimrc.local /etc/vim/vimrc.local
 # chown root:root /etc/vim/vimrc.local
 
+# if IPv6 is disabled, Domain resolution could be very slow. We fix this:
+echo options single-request-reopen >> /etc/resolv.conf
+
 exit 0
