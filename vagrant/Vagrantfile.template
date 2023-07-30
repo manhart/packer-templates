@@ -32,6 +32,9 @@ VAGRANTFILE_API_VERSION = '2'
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.box_check_update = true
     config.vm.hostname = VM_NAME
+	
+	# Enable Agent forwarding over SSH connections
+	config.ssh.forward_agent = true
 
     # config.vagrant.plugins = "vagrant-winnfsd"
     # config.vm.define "lamp", primary: true do |lamp|
@@ -87,7 +90,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         gitConfigFile = File.expand_path("~/.gitconfig")
         print "Checking #{gitConfigFile} ...\n"
         unless File.exists? (gitConfigFile)
-            print "Your #{gitConfigFile} is missing.\n\nPlease insert your credentials\n"
+            print "Your #{gitConfigFile} is missing.\n\nPlease insert your cre
+			
+			dentials\n"
             print "Firstname and Lastname: "
             name = STDIN.gets.chomp
             print "E-Mail: "
@@ -98,6 +103,7 @@ email = #{email}
 
  [core]
      autocrlf = false
+	 ignorecase = false
  ")
             print "#{gitConfigFile} created\n"
             print "\n"

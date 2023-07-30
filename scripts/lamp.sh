@@ -445,11 +445,16 @@ apt-get install -yqq curl software-properties-common
 
 curl -fsSL https://deb.nodesource.com/setup_19.x | bash -
 
-# nodejs v17 node-uglify
-
 apt-get install -yqq nodejs
 
-npm install --quiet uglify-js -g
+echo ''
+echo '==============================================================='
+echo '===>                   sass, uglify-js                     <==='
+echo '==============================================================='
+echo ''
+
+npm install --quiet -g sass
+npm install --quiet -g uglify-js
 
 
 echo ''
