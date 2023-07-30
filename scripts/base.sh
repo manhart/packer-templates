@@ -10,7 +10,7 @@ echo "==============================================="
 echo "Hello, this is `whoami`"
 
 SSH_USER=${SSH_USERNAME:-vagrant}
-SSH_USER_HOME=${SSH_USER_HOME:-/home/${SSH_USER}}
+HOME_DIR=${HOME_DIR:-/home/${SSH_USER}}
 
 # secure ssh
 sed -i 's/^#Post 22$/Port 22/' /etc/ssh/sshd_config
@@ -25,9 +25,9 @@ chown root:root /etc/skel/.bash_logout
 mv /tmp/files/skel/.profile /etc/skel/.profile
 chown root:root /etc/skel/.profile
 
-cp /etc/skel/.bashrc $SSH_USER_HOME/.bashrc
-cp /etc/skel/.bash_logout $SSH_USER_HOME/.bash_logout
-cp /etc/skel/.profile $SSH_USER_HOME/.profile
+cp /etc/skel/.bashrc $HOME_DIR/.bashrc
+cp /etc/skel/.bash_logout $HOME_DIR/.bash_logout
+cp /etc/skel/.profile $HOME_DIR/.profile
 
 # root
 mv /tmp/files/root/.bash_profile /root/.bash_profile

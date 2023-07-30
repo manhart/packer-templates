@@ -16,7 +16,7 @@ DB_HOST='localhost'
 DB_ROOT='root'
 #DB_ROOT_PASS='$(openssl rand -hex 32)'
 SSH_USER=${SSH_USERNAME:-vagrant}
-SSH_USER_HOME=${SSH_USER_HOME:-/home/${SSH_USER}}
+HOME_DIR=${HOME_DIR:-/home/${SSH_USER}}
 DB_USER=$SSH_USER
 DB_USER_PASS=${SSH_PASSWORD:-vagrant}
 VM_NAME=${VM_NAME}
@@ -118,18 +118,18 @@ a2ensite default-lamp.conf
 
 echo '===> Configure Apache default ssl vhost: '$VM_NAME' <==='
 # SSL/TLS self-signed certificate
-if [[ ! -d $SSH_USER_HOME/ssl ]]
+if [[ ! -d $HOME_DIR/ssl ]]
 then
-	mkdir -p $SSH_USER_HOME/ssl
-	chown $SSH_USER $SSH_USER_HOME/ssl
+	mkdir -p $HOME_DIR/ssl
+	chown $SSH_USER $HOME_DIR/ssl
 fi
-if [[ ! -f $SSH_USER_HOME/ssl/$VM_NAME.local.key ]]
+if [[ ! -f $HOME_DIR/ssl/$VM_NAME.local.key ]]
 then
-	openssl genrsa -out $SSH_USER_HOME/ssl/$VM_NAME.local.key 4096
-	chgrp ssl-cert $SSH_USER_HOME/ssl/$VM_NAME.local.key
-	chown $SSH_USER $SSH_USER_HOME/ssl/$VM_NAME.local.key
-	openssl req -new -x509 -key $SSH_USER_HOME/ssl/$VM_NAME.local.key -out $SSH_USER_HOME/ssl/$VM_NAME.local.crt -days 3650 -subj /CN=$VM_NAME.local
-	chown $SSH_USER $SSH_USER_HOME/ssl/$VM_NAME.local.crt
+	openssl genrsa -out $HOME_DIR/ssl/$VM_NAME.local.key 4096
+	chgrp ssl-cert $HOME_DIR/ssl/$VM_NAME.local.key
+	chown $SSH_USER $HOME_DIR/ssl/$VM_NAME.local.key
+	openssl req -new -x509 -key $HOME_DIR/ssl/$VM_NAME.local.key -out $HOME_DIR/ssl/$VM_NAME.local.crt -days 3650 -subj /CN=$VM_NAME.local
+	chown $SSH_USER $HOME_DIR/ssl/$VM_NAME.local.crt
 fi
 
 echo '<IfModule mod_ssl.c>
@@ -141,8 +141,8 @@ echo '<IfModule mod_ssl.c>
 		# activate HTTP/2 protocol
 		Protocols h2 h2c http/1.1
 		SSLEngine on
-		SSLCertificateFile '$SSH_USER_HOME'/ssl/'$VM_NAME'.local.crt
-		SSLCertificateKeyFile '$SSH_USER_HOME'/ssl/'$VM_NAME'.local.key
+		SSLCertificateFile '$HOME_DIR'/ssl/'$VM_NAME'.local.crt
+		SSLCertificateKeyFile '$HOME_DIR'/ssl/'$VM_NAME'.local.key
 		<Directory /virtualweb>
 			Options Indexes FollowSymLinks
 			DirectoryIndex index.php index.html

@@ -5,21 +5,28 @@
 #date			: 2020-05-27
 #notes			:
 SSH_USER=${SSH_USERNAME:-vagrant}
-SSH_USER_HOME=${SSH_USER_HOME:-/home/${SSH_USER}}
+HOME_DIR=${HOME_DIR:-/home/${SSH_USER}}
 
 if [[ $PACKER_BUILDER_TYPE =~ virtualbox ]]; then
 	echo "==============================================="
     echo "===> Installing VirtualBox guest additions <==="
 	echo "==============================================="
-    apt-get install -yqq linux-headers-$(uname -r) build-essential perl
+    apt-get install -yqq linux-headers-$(uname -r) build-essential dkms bzip2 tar
     apt-get install -yqq libxt6 libxmu6
 
-    VBOX_VERSION=$(cat /home/vagrant/.vbox_version)
-    mount -o loop $SSH_USER_HOME/VBoxGuestAdditions_${VBOX_VERSION}.iso /mnt
-    sh /mnt/VBoxLinuxAdditions.run --nox11
+    VBOX_VERSION=$(cat $HOME_DIR/.vbox_version)
+	ISO=VBoxGuestAdditions_${VBOX_VERSION}.iso
+    mount -o loop $HOME_DIR/$ISO /mnt
+    /mnt/VBoxLinuxAdditions.run --nox11 || true
+
     umount /mnt
-    rm $SSH_USER_HOME/VBoxGuestAdditions_${VBOX_VERSION}.iso
-    rm $SSH_USER_HOME/.vbox_version
+    rm $HOME_DIR/$ISO
+    rm $HOME_DIR/.vbox_version
+	
+    if ! modinfo vboxsf >/dev/null 2>&1; then
+        echo "Cannot find vbox kernel module. Installation of guest additions unsuccessful!"
+		exit 1
+    fi
 fi
 
 exit 0

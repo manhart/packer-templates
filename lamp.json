@@ -5,6 +5,7 @@
     "cpus": "4",
     "disk_size": "200000",
     "memory": "4096",
+	"gfx_vram_size": "32",
     "headless": "",
     "iso_name": "debian-11.6.0-amd64-netinst.iso",
     "mirror": "https://cdimage.debian.org/cdimage/release",
@@ -28,30 +29,32 @@
     {
       "type": "virtualbox-iso",
       "boot_command": [
-        "<esc><wait>",
-		"install ",
-		"auto ",
-		"preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{ user `preseed` }} ",
-		"language=en country=DE locale=en_US.UTF-8 ",
+		"<esc><wait>",
+		"install auto=true priority=critical ",
+		"url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/{{ user `preseed` }} ",
+		"debian-installer=en_US kbd-chooser/method=de ",
 		"fb=false debconf/frontend=noninteractive ",
-		"keymap=de ",
 		"hostname={{ .Name }} ",
 		"domain=local ",
 		"interface=auto ",
 		"<enter>"
       ],
-      "boot_wait": "10s",
+      "boot_wait": "5s",
       "communicator": "ssh",
+	  "chipset": "piix3",
+	  "firmware": "bios",
       "cpus": "{{user `cpus`}}",
-      "disk_size": "{{user `disk_size`}}",
-      "memory": "{{user `memory`}}",
-      "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+	  "nested_virt": true,
+      "disk_size": "{{ user `disk_size` }}",
+      "memory": "{{ user `memory` }}",
+	  "gfx_vram_size": "{{ user `gfx_vram_size` }}",
+      "guest_additions_path": "VBoxGuestAdditions_{{ .Version }}.iso",
 	  "virtualbox_version_file": ".vbox_version",
-      "guest_os_type": "{{user `guest_os_type`}}",
+      "guest_os_type": "{{ user `guest_os_type` }}",
       "hard_drive_interface": "sata",
 	  "iso_interface": "sata",
 	  "iso_checksum": "file:{{ user `mirror` }}/{{ user `mirror_directory` }}/SHA256SUMS",
-      "iso_url": "{{user `mirror`}}/{{user `mirror_directory`}}/{{user `iso_name`}}",
+      "iso_url": "{{ user `mirror` }}/{{ user `mirror_directory` }}/{{ user `iso_name` }}",
 	  "post_shutdown_delay": "1m",
       "shutdown_command": "echo '{{user `ssh_password`}}' | sudo -S shutdown -Ph now",
       "ssh_username": "{{ user `ssh_username` }}",
@@ -59,7 +62,11 @@
       "ssh_timeout": "{{ user `ssh_timeout` }}",
 	  "ssh_port": "22",
 	  "http_directory": "http",
-      "vm_name": "{{ user `vm_name` }}"
+      "vm_name": "{{ user `vm_name` }}",
+	  "vboxmanage": [
+		["modifyvm", "{{ .Name }}", "--audio", "none"],
+		["modifyvm", "{{ .Name }}", "--nat-localhostreachable1", "on"]
+	  ]
     }
   ],
   "provisioners": [{
@@ -81,6 +88,7 @@
       "execute_command": "echo '{{user `ssh_password`}}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
       "scripts": [
         "scripts/vagrant.sh",
+        "scripts/systemd.sh",
 	    "scripts/base.sh",
 	    "scripts/update.sh",
 	    "scripts/virtualbox.sh",
@@ -91,6 +99,7 @@
 		"scripts/php-xdebug.sh",
 		"scripts/phpmyadmin.sh",
 		"scripts/mail.sh"
+		
 	  ]
 	}, {
 	  "environment_vars": [

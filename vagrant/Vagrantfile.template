@@ -113,12 +113,6 @@ email = #{email}
     # copy .gitconfig to vm
     config.vm.provision "file", source: "~/.gitconfig", destination: ".gitconfig"
 
-    # copy private key file to vm
-    if File.exists?("#{Dir.home}/.ssh/id_rsa")
-        config.vm.provision "file", source: "~/.ssh/id_rsa", destination: ".ssh/id_rsa"
-        config.vm.provision 'shell', inline: "chmod 600 ~/.ssh/id_rsa", privileged: false
-    end
-
     # copy public key file to vm and register for vagrant user
     if File.exists?("#{Dir.home}/.ssh/id_rsa.pub")
         ssh_pub_key = File.readlines("#{Dir.home}/.ssh/id_rsa.pub").first.strip

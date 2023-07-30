@@ -11,11 +11,12 @@ echo '==============================================================='
 echo ''
 # Download and extract phpmyadmin
 
-wget --no-verbose https://files.phpmyadmin.net/phpMyAdmin/5.2.0/phpMyAdmin-5.2.0-all-languages.tar.gz -P /tmp
-tar -xzf /tmp/phpMyAdmin-5.2.0-all-languages.tar.gz
+VER="5.2.1"
+wget --no-verbose https://files.phpmyadmin.net/phpMyAdmin/$VER/phpMyAdmin-$VER-all-languages.tar.gz -P /tmp
+tar -xzf /tmp/phpMyAdmin-$VER-all-languages.tar.gz
 
 # move to /usr/share
-mv phpMyAdmin-5.2.0-all-languages /usr/share/phpmyadmin/
+mv phpMyAdmin-$VER-all-languages /usr/share/phpmyadmin/
 
 # create the tmp directories
 mkdir -p /var/lib/phpmyadmin
