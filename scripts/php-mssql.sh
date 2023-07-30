@@ -23,18 +23,19 @@ curl https://packages.microsoft.com/config/debian/$DEB_RELEASE/prod.list > /etc/
 apt-get -yqq update
 
 # Install Driver 
-ACCEPT_EULA=Y apt-get install -yq msodbcsql18
-ACCEPT_EULA=Y apt-get install -yq msodbcsql17
+# we need old unixodbc 2.3.7 @issue: https://github.com/microsoft/msphpsql/issues/1438
+ACCEPT_EULA=Y apt-get install -yq --allow-downgrades msodbcsql18 odbcinst=2.3.7 odbcinst1debian2=2.3.7 unixodbc-dev=2.3.7 unixodbc=2.3.7 --no-install-recommends
+ACCEPT_EULA=Y apt-get install -yq --allow-downgrades msodbcsql17 odbcinst=2.3.7 odbcinst1debian2=2.3.7 unixodbc-dev=2.3.7 unixodbc=2.3.7 --no-install-recommends
 # optional: for bcp and sqlcmd
-ACCEPT_EULA=Y apt-get install -yq mssql-tools18
-ACCEPT_EULA=Y apt-get install -yq mssql-tools
+ACCEPT_EULA=Y apt-get install -yq mssql-tools18 --no-install-recommends
+ACCEPT_EULA=Y apt-get install -yq mssql-tools --no-install-recommends
 
 echo -e '\nexport PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
 echo -e '\nexport PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
 source ~/.bashrc
 
 # optional: for unixODBC development headers
-apt-get -yq install unixodbc-dev
+apt-get -yq install --allow-downgrades unixodbc-dev=2.3.7 --no-install-recommends
 
 # optional: kerberos library for debian-slim distributions
 apt-get -yq install libgssapi-krb5-2
@@ -42,15 +43,14 @@ apt-get -yq install libgssapi-krb5-2
 # Fix PHP Notice in php7.4 with pecl: https://stackoverflow.com/questions/59720692/php-7-4-1-pear-1-10-10-is-not-working-trying-to-access-array-offset-on-value
 mkdir -p /tmp/pear/cache
 
-MSSQL_DRIVER_VERSION=5.10.1
-
+MSSQL_DRIVER_VERSION=5.11.0
 yes '' | pecl -q -d php_suffix=8.2 -d preferred_state=beta install sqlsrv-$MSSQL_DRIVER_VERSION
 yes '' | pecl -q -d php_suffix=8.2 -d preferred_state=beta install pdo_sqlsrv-$MSSQL_DRIVER_VERSION
 pecl -q uninstall -r sqlsrv-$MSSQL_DRIVER_VERSION
 pecl -q uninstall -r pdo_sqlsrv-$MSSQL_DRIVER_VERSION
 
-yes '' | pecl -q -d php_suffix=8.1 -d preferred_state=beta install sqlsrv-$MSSQL_DRIVER_VERSION
-yes '' | pecl -q -d php_suffix=8.1 -d preferred_state=beta install pdo_sqlsrv-$MSSQL_DRIVER_VERSION
+yes '' | pecl -q -d php_suffix=8.1 install sqlsrv-$MSSQL_DRIVER_VERSION
+yes '' | pecl -q -d php_suffix=8.1 install pdo_sqlsrv-$MSSQL_DRIVER_VERSION
 pecl -q uninstall -r sqlsrv-$MSSQL_DRIVER_VERSION
 pecl -q uninstall -r pdo_sqlsrv-$MSSQL_DRIVER_VERSION
 
@@ -59,6 +59,7 @@ yes '' | pecl -q -d php_suffix=8.0 install pdo_sqlsrv-$MSSQL_DRIVER_VERSION
 pecl -q uninstall -r sqlsrv-$MSSQL_DRIVER_VERSION
 pecl -q uninstall -r pdo_sqlsrv-$MSSQL_DRIVER_VERSION
 
+MSSQL_DRIVER_VERSION=5.10.1
 yes '' | pecl -q -d php_suffix=7.4 install sqlsrv-$MSSQL_DRIVER_VERSION
 yes '' | pecl -q -d php_suffix=7.4 install pdo_sqlsrv-$MSSQL_DRIVER_VERSION
 pecl -q uninstall -r sqlsrv-$MSSQL_DRIVER_VERSION
