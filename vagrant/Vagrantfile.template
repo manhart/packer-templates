@@ -101,9 +101,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 name = #{name}
 email = #{email}
 
- [core]
-     autocrlf = false
-	 ignorecase = false
+[core]
+    autocrlf = false
+	ignorecase = false
  ")
             print "#{gitConfigFile} created\n"
             print "\n"
@@ -117,9 +117,12 @@ email = #{email}
     if File.exists?("#{Dir.home}/.ssh/id_rsa.pub")
         ssh_pub_key = File.readlines("#{Dir.home}/.ssh/id_rsa.pub").first.strip
         config.vm.provision 'shell', inline: "grep -q -F \"#{ssh_pub_key}\" ~/.ssh/authorized_keys 2>/dev/null || echo \"#{ssh_pub_key}\" >> ~/.ssh/authorized_keys", privileged: false
+		config.vm.provision 'shell', inline: "sed -i 's/^#PasswordAuthentication .*$/PasswordAuthentication no/' /etc/ssh/sshd_config", privileged: false
     end
 
     config.vm.provision "shell", args: [VM_NAME, VM_IP, HOSTNAME],  inline: <<-SHELL
+		export DEBIAN_FRONTEND=noninteractive
+		
         ssh-add -l
 
         echo "Provisioning via shell $1. Modify /etc/hosts to this host $3"
@@ -131,7 +134,7 @@ email = #{email}
 
         echo "Update apt packages"
         apt-get update -yqq
-        apt-get upgrade -yqqf
+        ACCEPT_EULA=Y apt-get upgrade -yqqf
 
         echo "Update composer"
         COMPOSER_ALLOW_SUPERUSER=1 composer self-update
@@ -166,7 +169,7 @@ email = #{email}
                 openssl genrsa -out $VAGRANT_HOME_SSL/rootCA.key 4096 &>/dev/null
                 openssl req -x509 -new -nodes -key $VAGRANT_HOME_SSL/rootCA.key -sha256 -days 18250 -out $VAGRANT_HOME_SSL/rootCA.pem -subj "/C=DE/ST=Bayern/L=Landshut/O=Local AG/OU=IT Department/CN=$1" &>/dev/null
                 openssl req -new -newkey rsa:4096 -sha256 -nodes -keyout $VAGRANT_HOME_SSL/$1.key -out $VAGRANT_HOME_SSL/$1.csr -subj "/C=DE/ST=Bayern/L=Landshut/O=Local AG/OU=IT Department/CN=$1" &>/dev/null
-                openssl x509 -req -in $VAGRANT_HOME_SSL/$1.csr -CA $VAGRANT_HOME_SSL/rootCA.pem -CAkey $VAGRANT_HOME_SSL/rootCA.key -CAcreateserial -out $VAGRANT_HOME_SSL/$1.crt -days 18250 -sha256 -extfile $VAGRANT_HOME_SSL/v3.ext
+                openssl x509 -req -in $VAGRANT_HOME_SSL/$1.csr -CA $VAGRANT_HOME_SSL/rootCA.pem -CAkey $VAGRANT_HOME_SSL/rootCA.key -CAcreateserial -out $VAGRANT_HOME_SSL/$1.crt -days 18250 -sha256 -extfile $VAGRANT_HOME_SSL/$3.ext
                 openssl pkcs12 -export -out $VAGRANT_HOME_SSL/$1.pfx -inkey $VAGRANT_HOME_SSL/$1.key -in $VAGRANT_HOME_SSL/$1.crt -passin pass:vagrant -passout pass:vagrant
                 chown vagrant $VAGRANT_HOME_SSL/*
 
