@@ -15,7 +15,6 @@ HOME_DIR=${HOME_DIR:-/home/${SSH_USER}}
 # secure ssh
 sed -i 's/^#Post 22$/Port 22/' /etc/ssh/sshd_config
 sed -i 's/^#PermitRootLogin .*$/PermitRootLogin no/' /etc/ssh/sshd_config
-sed -i 's/^#PasswordAuthentication .*$/PasswordAuthentication no/' /etc/ssh/sshd_config
 
 # skel
 mv /tmp/files/skel/.bashrc /etc/skel/.bashrc

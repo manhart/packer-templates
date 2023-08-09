@@ -90,8 +90,8 @@ Vagrant.configure("2") do |config|
 
 [core]
     autocrlf = false
-    ignorecase = false
-")
+	ignorecase = false
+ ")
 		print "#{git_config_path} created\n"
 		print "\n"
 	end
@@ -110,7 +110,7 @@ Vagrant.configure("2") do |config|
 		config.vm.provision 'shell', inline: "sed -i 's/^#PasswordAuthentication .*$/PasswordAuthentication no/' /etc/ssh/sshd_config", privileged: false
     end
 
-    config.vm.provision "shell", args: [VM_NAME, VM_IP, HOSTNAME, VM_VHOSTS_FILE, VHOSTS_JSON, VM_CLEAR_VHOSTS.to_s], inline: <<-SHELL
+    config.vm.provision "shell", args: [VM_NAME, VM_IP, HOSTNAME, VM_VHOSTS_FILE, VHOSTS_JSON, VM_CLEAR_VHOSTS.to_s],  inline: <<-SHELL
 		export DEBIAN_FRONTEND=noninteractive
 
         ssh-add -l
