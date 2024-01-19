@@ -5,7 +5,7 @@ This respository is for maintaining my [Vagrant Box Templates](https://github.co
 If you want to create the LAMP box yourself, you can do so with the following command in the "lamp" directory:
 
 ```PowerShell
-packer build -except="vaground-cloud" -var "version=1.0.0" -var-file="debian-11.6-amd64.json" .\lamp.json
+packer build -except="vaground-cloud" -var "version=1.0.0" -var-file="debian-12.4-amd64.json" .\lamp.json
 ```
 
 
