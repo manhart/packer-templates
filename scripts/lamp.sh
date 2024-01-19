@@ -339,8 +339,8 @@ echo 'Done'
 #echo '==============================================================='
 #echo ''
 a2enmod proxy_fcgi setenvif
-a2enconf php8.2-fpm
-update-alternatives --set php /usr/bin/php8.2
+#a2enconf php8.2-fpm
+#update-alternatives --set php /usr/bin/php8.2
 #update-alternatives --set phpize /usr/bin/phpize8.2
 #update-alternatives --set php-config /usr/bin/php-config8.2
 
