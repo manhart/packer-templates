@@ -333,11 +333,11 @@ sed -i 's/^user = .*$/user = vagrant/' /etc/php/8.1/fpm/pool.d/www.conf
 sed -i 's/^user = .*$/user = vagrant/' /etc/php/7.4/fpm/pool.d/www.conf
 echo 'Done'
 
-echo ''
-echo '==============================================================='
-echo '===>            Enabling PHP 8.2 FPM by default            <==='
-echo '==============================================================='
-echo ''
+#echo ''
+#echo '==============================================================='
+#echo '===>            Enabling PHP 8.2 FPM by default            <==='
+#echo '==============================================================='
+#echo ''
 a2enmod proxy_fcgi setenvif
 a2enconf php8.2-fpm
 update-alternatives --set php /usr/bin/php8.2
