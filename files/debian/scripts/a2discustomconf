@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Ensure that a parameter has been passed in
+if [ -z "$1" ]; then
+    echo "Usage: a2discustomconf config-name"
+    exit 1
+fi
+
+# Define the directories
+ENABLED_DIR=/etc/apache2/custom-enabled
+
+# Check if the symlink exists in the enabled directory
+if [ ! -L "$ENABLED_DIR/$1.conf" ]; then
+    echo "Error: Symlink $1.conf not found in $ENABLED_DIR"
+    exit 1
+fi
+
+# Remove symlink to disable config
+rm "$ENABLED_DIR/$1.conf"
+echo "Disabled $1"
+
+# Optionally reload Apache
+systemctl reload apache2

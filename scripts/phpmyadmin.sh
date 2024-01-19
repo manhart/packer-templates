@@ -31,9 +31,10 @@ randomBlowfishSecret=$(openssl rand -base64 32)
 sed -e "s|cfg\['blowfish_secret'\] = ''|cfg['blowfish_secret'] = base64_decode('$randomBlowfishSecret')|" /tmp/files/phpmyadmin/config.inc.php > /usr/share/phpmyadmin/config.inc.php
 
 # configure the vhost
-mv /tmp/files/phpmyadmin/apache.conf /etc/apache2/sites-available/phpmyadmin.conf
+mv /tmp/files/phpmyadmin/apache.conf /etc/apache2/sites-available/pinned-phpmyadmin.conf
+chown root:root /etc/apache2/sites-available/pinned-phpmyadmin.conf
 
 # enable alias /phpmyadmin
-a2ensite phpmyadmin.conf
+a2ensite pinned-phpmyadmin
 
 exit 0

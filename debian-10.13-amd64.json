@@ -1,7 +1,7 @@
 {
-    "iso_name": "debian-10.8.0-amd64-netinst.iso",
+    "iso_name": "debian-10.13.0-amd64-netinst.iso",
     "mirror": "https://cdimage.debian.org/cdimage/archive",
-    "mirror_directory": "10.8.0/amd64/iso-cd",
+    "mirror_directory": "10.13.0/amd64/iso-cd",
     "preseed": "preseed-buster.cfg",
 	"guest_os_type": "Debian_64",
     "headless": "false"

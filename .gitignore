@@ -8,5 +8,6 @@ crash.log
 *.box
 
 build-bullseye-vagrant-cloud.bat
+build-bookworm-vagrant-cloud.bat
 private-vars.json
 ubuntu-20.04-amd64.json

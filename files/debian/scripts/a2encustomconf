@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Ensure that a parameter has been passed in
+if [ -z "$1" ]; then
+    echo "Usage: a2encustomconf config-name"
+    exit 1
+fi
+
+# Define the directories
+AVAILABLE_DIR=/etc/apache2/custom-available
+ENABLED_DIR=/etc/apache2/custom-enabled
+
+# Check if the config file exists in the available directory
+if [ ! -f "$AVAILABLE_DIR/$1.conf" ]; then
+    echo "Error: Config file $1.conf not found in $AVAILABLE_DIR"
+    exit 1
+fi
+
+# Create symlink to enable config
+ln -s "$AVAILABLE_DIR/$1.conf" "$ENABLED_DIR/$1.conf"
+echo "Enabled $1"
+
+# Optionally reload Apache
+systemctl reload apache2

@@ -1,0 +1,8 @@
+{
+    "iso_name": "debian-12.2.0-amd64-netinst.iso",
+    "mirror": "https://cdimage.debian.org/debian-cd",
+    "mirror_directory": "12.2.0/amd64/iso-cd",
+    "preseed": "preseed-bookworm.cfg",
+	"guest_os_type": "Debian_64",
+    "headless": "false"
+}
