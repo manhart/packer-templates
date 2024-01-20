@@ -51,10 +51,11 @@ locale-gen
 
 MSSQL_DRIVER_VERSION="5.12.0beta1"
 
-echo 'mssql for php8.3'
 wget -q https://pecl.php.net/get/sqlsrv-$MSSQL_DRIVER_VERSION.tgz -O /usr/src/sqlsrv-$MSSQL_DRIVER_VERSION.tgz
 tar xzvf /usr/src/sqlsrv-$MSSQL_DRIVER_VERSION.tgz -C /usr/src
 cd /usr/src/sqlsrv-$MSSQL_DRIVER_VERSION
+
+echo 'mssql for php8.3'
 /usr/bin/phpize8.3 --clean
 /usr/bin/phpize8.3
 ./configure --silent --with-php-config=/usr/bin/php-config8.3 && make -s clean && make -s && make -s install

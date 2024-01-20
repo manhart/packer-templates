@@ -119,6 +119,7 @@ ln -nfs /srv/www /virtualweb
 
 a2dissite 000-default.conf
 
+echo '===> Flush every chunk of data received from the FCGI backend to the client <==='
 echo '<IfModule proxy_fcgi_module>
     # flushpackets forces the module to flush every chunk of data received from the FCGI backend as soon as it receives it, without buffering
     <Proxy "fcgi://localhost/" flushpackets=on>
@@ -158,7 +159,7 @@ echo '===> Install PHP 8.2 <==='
 apt-get install -yq php8.2-fpm php8.2-cli php8.2-common php8.2-opcache php8.2-odbc php8.2-ldap php8.2-dev php8.2-gd php8.2-sqlite3 php8.2-bcmath php8.2-imap php8.2-soap php8.2-mysql php8.2-curl php8.2-xml php8.2-intl php8.2-mbstring php8.2-zip php8.2-gd php8.2-maxminddb php8.2-yaml php8.2-redis php8.2-imagick php8.2-mailparse php8.2-memcached --allow-unauthenticated
 
 echo '===> Install PHP 8.3 <==='
-apt-get install -yq php8.3-fpm php8.3-cli php8.3-common php8.3-{bcmath,gd,imap,ldap,soap,mysql,curl,intl,imagick,igbinary,mailparse,maxminddb,mbstring,memcached,msgpack,odbc,opcache,redis,sqlite3,xdebug,xml,yaml,zip} --allow-unauthenticated
+apt-get install -yq php8.3-fpm php8.3-cli php8.3-common php8.3-{bcmath,gd,imap,ldap,dev,soap,mysql,curl,intl,imagick,igbinary,mailparse,maxminddb,mbstring,memcached,msgpack,odbc,opcache,redis,sqlite3,xdebug,xml,yaml,zip} --allow-unauthenticated
 
 # default PHP Version should be the last installed
 # echo '===> set default PHP Version 7.4 <==='
@@ -333,16 +334,16 @@ sed -i 's/^user = .*$/user = vagrant/' /etc/php/8.1/fpm/pool.d/www.conf
 sed -i 's/^user = .*$/user = vagrant/' /etc/php/7.4/fpm/pool.d/www.conf
 echo 'Done'
 
-#echo ''
-#echo '==============================================================='
-#echo '===>            Enabling PHP 8.2 FPM by default            <==='
-#echo '==============================================================='
-#echo ''
+echo ''
+echo '==============================================================='
+echo '===>            Enabling PHP 8.3 FPM as default            <==='
+echo '==============================================================='
+echo ''
 a2enmod proxy_fcgi setenvif
-#a2enconf php8.2-fpm
-#update-alternatives --set php /usr/bin/php8.2
-#update-alternatives --set phpize /usr/bin/phpize8.2
-#update-alternatives --set php-config /usr/bin/php-config8.2
+a2enconf php8.3-fpm
+update-alternatives --set php /usr/bin/php8.3
+update-alternatives --set phpize /usr/bin/phpize8.3
+update-alternatives --set php-config /usr/bin/php-config8.3
 
 echo ''
 echo '==============================================================='
